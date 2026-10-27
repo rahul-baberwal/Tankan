@@ -1,7 +1,7 @@
 {
   "name": "Tankan — typing test for government exams",
   "short_name": "Tankan",
-  "start_url": "index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f4f8fb",
   "theme_color": "#15a6f0",

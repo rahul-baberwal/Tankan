@@ -44,6 +44,11 @@
   /* ---------------- routing ---------------- */
   var VIEWS = ['home', 'exams', 'setup', 'test', 'result', 'practice', 'game', 'progress', 'settings', 'cert'];
   var current = 'home';
+  function cleanHomeUrl() {
+    if (location.hash && history.replaceState) {
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
+    }
+  }
   function show(v) {
     current = v;
     VIEWS.forEach(function (n) { $('#view-' + n).classList.toggle('on', n === v); });
@@ -52,25 +57,95 @@
     $('#menu').classList.remove('open');
     window.scrollTo(0, 0);
     if (window.TKGame) { v === 'game' ? TKGame.onShow() : TKGame.onHide(); }
-    if (v === 'home') heroDemo(); else stopDemo();
+    if (v === 'home') { cleanHomeUrl(); heroDemo(); } else { stopDemo(); }
     if (v === 'exams') renderExams();
     if (v === 'practice') renderLessons();
     if (v === 'progress') renderProgress();
     if (v === 'settings') fillSettings();
   }
   function route() {
-    var h = (location.hash || '#/home').replace('#/', '') || 'home';
-    if (['home', 'exams', 'practice', 'game', 'progress', 'settings'].indexOf(h) < 0) h = 'home';
+    var raw = (location.hash || '').replace(/^#\/?/, '').trim();
+    var h = raw;
+    if (!h || h === 'home') {
+      h = 'home';
+      cleanHomeUrl();
+    } else if (['exams', 'practice', 'game', 'progress', 'settings'].indexOf(h) < 0) {
+      h = 'home';
+      cleanHomeUrl();
+    }
     if (T && T.running) cancelTest();
     show(h);
   }
   window.addEventListener('hashchange', route);
+  window.addEventListener('popstate', route);
   $('#burger').addEventListener('click', function () { $('#menu').classList.toggle('open'); });
   // Menu clicks while the hash is unchanged (e.g. from the set-up screen) still need to navigate.
   document.addEventListener('click', function (e) {
+    var homeLink = e.target.closest('[data-nav="home"], .logo');
+    if (homeLink) {
+      e.preventDefault();
+      if (T && T.running && T.started && !confirm('Leave this test? Your attempt will not be saved.')) return;
+      if (location.hash) {
+        if (history.pushState) {
+          try { history.pushState(null, '', location.pathname + location.search); } catch (err) { location.hash = ''; }
+        } else {
+          location.hash = '';
+        }
+      }
+      if (T && T.running) cancelTest();
+      show('home');
+      return;
+    }
+
     var a = e.target.closest('.nav a[href^="#/"]'); if (!a) return;
     if (T && T.running && T.started && !confirm('Leave this test? Your attempt will not be saved.')) { e.preventDefault(); return; }
-    if (a.getAttribute('href') === (location.hash || '#/home')) { e.preventDefault(); route(); }
+    if (a.getAttribute('href') === location.hash) { e.preventDefault(); route(); }
+  });
+
+  /* ---------------- PWA install handling ---------------- */
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    $$('.pwa-install-btn').forEach(function (btn) { btn.classList.add('ready'); });
+  });
+
+  window.addEventListener('appinstalled', function () {
+    deferredPrompt = null;
+    toast('🎉 Tankan app installed!');
+    $$('.pwa-install-btn').forEach(function (btn) {
+      btn.classList.add('installed');
+      btn.style.display = 'none';
+    });
+  });
+
+  function triggerPwaInstall() {
+    var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      window.navigator.standalone === true;
+    if (isStandalone) {
+      toast('Tankan is already installed and running as an app.');
+      return;
+    }
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function (choiceResult) {
+        if (choiceResult && choiceResult.outcome === 'accepted') {
+          toast('Installing Tankan...');
+        }
+        deferredPrompt = null;
+      });
+      return;
+    }
+    var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    if (isIos) {
+      alert('To install Tankan on iPhone/iPad:\n1. Tap the Share button in Safari (icon with box and arrow up)\n2. Select "Add to Home Screen"');
+    } else {
+      toast('To install: click the Install icon (💻/📲) in your browser address bar or menu (⋮)');
+    }
+  }
+
+  $$('.pwa-install-btn').forEach(function (btn) {
+    btn.addEventListener('click', triggerPwaInstall);
   });
 
   /* ---------------- exam cards ---------------- */
@@ -764,6 +839,7 @@
   $('#homeExams').innerHTML = D.EXAMS.slice(0, 8).map(card).join('');
   // Offline cache is for the browser/PWA only. The Windows app already ships its files, and a cache there would hide updates.
   var inTauri = !!(window.__TAURI_INTERNALS__ || window.__TAURI__) || location.hostname === 'tauri.localhost';
+  if (inTauri) document.body.classList.add('is-tauri');
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !inTauri) navigator.serviceWorker.register('sw.js').catch(function () { });
   route();
 })();

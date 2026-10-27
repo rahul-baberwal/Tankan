@@ -15,19 +15,21 @@
 
 <header class="nav no-print">
   <div class="wrap">
-    <a class="logo" href="#/home" aria-label="Tankan home">
+    <a class="logo" href="#" data-nav="home" aria-label="Tankan home">
       <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#15a6f0"/><rect x="11" y="10" width="42" height="40" rx="9" fill="#0b84c4"/><rect x="11" y="8" width="42" height="40" rx="9" fill="#fff"/><path d="M22 20h20v5.5h-7.2V40h-5.6V25.5H22z" fill="#0c1b2a"/><rect x="40" y="33" width="3" height="9" rx="1.5" fill="#15a6f0"/></svg>
       Tankan <small>टंकण</small>
     </a>
-    <button class="burger" id="burger" aria-label="Menu">☰</button>
     <ul id="menu">
-      <li><a href="#/home" data-nav="home">Home</a></li>
+      <li><a href="#" data-nav="home">Home</a></li>
       <li><a href="#/exams" data-nav="exams">Exams</a></li>
       <li><a href="#/practice" data-nav="practice">Lessons</a></li>
       <li><a href="#/game" data-nav="game">Word rain</a></li>
       <li><a href="#/progress" data-nav="progress">Progress</a></li>
       <li><a href="#/settings" data-nav="settings">Settings</a></li>
+      <li class="menu-pwa"><button class="pwa-menu-btn pwa-install-btn" id="pwaMenuBtn"><span class="pwa-icon">📲</span> Install App</button></li>
     </ul>
+    <button class="btn sm pwa-nav-btn pwa-install-btn" id="pwaNavBtn" title="Install Tankan as App" aria-label="Install App"><span class="pwa-icon">📲</span> <span class="pwa-text">Install App</span></button>
+    <button class="burger" id="burger" aria-label="Menu">☰</button>
   </div>
 </header>
 
@@ -43,6 +45,7 @@
         <div class="cta">
           <a class="btn" href="#/exams">⌨️ Pick your exam</a>
           <button class="btn alt" id="quickStart">⚡ 5 minute test</button>
+          <button class="btn alt pwa-install-btn" id="pwaHeroBtn"><span class="pwa-icon">📲</span> Install App</button>
         </div>
         <small>Your results stay on this device.</small>
       </div>
@@ -308,6 +311,7 @@
     <div>
       <h4>Tankan · टंकण</h4>
       <p>A free typing test simulator for Indian government exams. Built to run offline on Windows, in a browser, and later on Android.</p>
+      <p class="footer-credit">Created by <a href="https://rahulbaberwal.com" target="_blank" rel="noopener noreferrer">Rahul Baberwal (rahulbaberwal.com)</a></p>
     </div>
     <div>
       <h4>Practise</h4>
@@ -315,9 +319,12 @@
     </div>
     <div>
       <h4>Good to know</h4>
-      <a href="#/settings">Settings</a><a href="#/home">Back to top</a>
+      <a href="#/settings">Settings</a><a href="#" data-nav="home">Back to top</a>
     </div>
-    <div class="fine">Not affiliated with SSC, RRB, UPSSSC, any High Court or any other recruiting body. Passages are original practice text. Speeds and rules are practice defaults taken from public notices; confirm them in your official notice.</div>
+    <div class="fine">
+      <div>Not affiliated with SSC, RRB, UPSSSC, any High Court or any other recruiting body. Passages are original practice text. Speeds and rules are practice defaults taken from public notices; confirm them in your official notice.</div>
+      <div class="fine-credit">Created by <a href="https://rahulbaberwal.com" target="_blank" rel="noopener noreferrer">Rahul Baberwal</a> · <a href="https://rahulbaberwal.com" target="_blank" rel="noopener noreferrer">rahulbaberwal.com</a></div>
+    </div>
   </div>
 </footer>
 
