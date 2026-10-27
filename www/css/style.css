@@ -108,6 +108,33 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .chip { background: var(--blue-t); color: var(--blue-d); border-radius: 999px; padding: 2px 10px; font-size: .8rem; font-weight: 650; }
 .chip.lock { background: #fdecea; color: var(--stamp); }
 [data-theme="dark"] .chip.lock { background: #3a1a1a; }
+.chip.diff-low { background: #def5e6; color: #146c3a; }
+.chip.diff-med { background: var(--blue-t); color: var(--blue-d); }
+.chip.diff-hard { background: #fdecea; color: var(--stamp); }
+[data-theme="dark"] .chip.diff-low { background: #133824; color: #5ce69a; }
+[data-theme="dark"] .chip.diff-med { background: #0f2c3f; color: #5ecafc; }
+[data-theme="dark"] .chip.diff-hard { background: #3d1b1b; color: #ff8580; }
+
+/* ---------- difficulty tabs & filters ---------- */
+.exams-header-flex { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.diff-filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.diff-filter-label { font-weight: 700; font-size: .95rem; color: var(--ink-2); white-space: nowrap; }
+.diff-tabs { display: inline-flex; align-items: center; background: var(--card); border: 1.5px solid var(--line); border-radius: 999px; padding: 4px; gap: 4px; box-shadow: 0 1px 3px rgba(12, 27, 42, .04); }
+.diff-tab { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; border: 1px solid transparent; background: transparent; font-size: .88rem; font-weight: 700; color: var(--ink-2); cursor: pointer; transition: all .15s ease; user-select: none; }
+.diff-tab:hover { color: var(--ink); background: var(--blue-t); }
+.diff-tab.active { background: var(--blue); color: #fff; box-shadow: 0 2px 6px -1px rgba(21, 166, 240, .45); }
+.diff-tab .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: currentColor; opacity: .8; }
+.diff-tab.tab-low .dot { background: var(--ok); }
+.diff-tab.tab-med .dot { background: var(--blue); }
+.diff-tab.tab-hard .dot { background: var(--stamp); }
+.diff-tab.tab-low.active { background: #1f9d55; color: #fff; }
+.diff-tab.tab-low.active .dot { background: #fff; }
+.diff-tab.tab-med.active { background: var(--blue); color: #fff; }
+.diff-tab.tab-med.active .dot { background: #fff; }
+.diff-tab.tab-hard.active { background: #c8362f; color: #fff; }
+.diff-tab.tab-hard.active .dot { background: #fff; }
+.diff-field-label { font-weight: 650; font-size: .92rem; display: block; margin-bottom: 3px; }
+.diff-desc-box { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: .88rem; margin-top: 6px; line-height: 1.45; }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; }
 .split.rev > :first-child { order: 2; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; }

@@ -78,7 +78,10 @@
     var c = [x.min + ' min'];
     c.push(x.kdph ? x.kdph.toLocaleString('en-IN') + ' KDPH' : x.wpm ? x.wpm + ' WPM' : 'No pass mark');
     if (x.err < 100) c.push('≤' + x.err + '% errors');
-    var h = '';
+    var diff = x.difficulty || 'medium';
+    var diffClass = diff === 'low' ? 'diff-low' : diff === 'hard' ? 'diff-hard' : 'diff-med';
+    var diffLabel = diff === 'low' ? 'Low' : diff === 'hard' ? 'Hard' : 'Medium';
+    var h = '<span class="chip ' + diffClass + '">● ' + diffLabel + '</span>';
     c.forEach(function (t) { h += '<span class="chip">' + esc(t) + '</span>'; });
     if (!x.backspace) h += '<span class="chip lock">🔒 Backspace</span>';
     return h;
@@ -87,16 +90,49 @@
     return '<button class="xcard" data-exam="' + x.id + '"><span class="ico">' + x.icon + '</span><h3>' + esc(x.name) + '</h3><span class="sub">' + esc(x.sub) + '</span><div class="chips">' + chipsFor(x) + '</div></button>';
   }
   function allPresets() { return D.EXAMS.concat(D.QUICK); }
+
+  var currentExamDiff = 'all';
   function renderExams() {
-    $('#examList').innerHTML = D.EXAMS.map(card).join('');
-    $('#quickList').innerHTML = D.QUICK.map(card).join('') +
-      '<button class="xcard" data-exam="custom"><span class="ico">✍️</span><h3>Your own test</h3><span class="sub">Any text, any duration</span><div class="chips"><span class="chip">Paste a passage</span></div></button>';
+    var diff = currentExamDiff;
+    var exams = D.EXAMS.filter(function (x) {
+      if (diff === 'all') return true;
+      return (x.difficulty || 'medium') === diff;
+    });
+    var quick = D.QUICK.filter(function (x) {
+      if (diff === 'all') return true;
+      return (x.difficulty || 'low') === diff;
+    });
+    $('#examList').innerHTML = exams.map(card).join('');
+    var customCard = (diff === 'all' || diff === 'medium') ?
+      '<button class="xcard" data-exam="custom"><span class="ico">✍️</span><h3>Your own test</h3><span class="sub">Any text, any duration</span><div class="chips"><span class="chip diff-med">● Custom</span><span class="chip">Paste a passage</span></div></button>' : '';
+    $('#quickList').innerHTML = quick.map(card).join('') + customCard;
+
+    if ($('#govHeader')) $('#govHeader').style.display = exams.length ? '' : 'none';
+    if ($('#quickHeader')) $('#quickHeader').style.display = (quick.length || customCard) ? '' : 'none';
+    var totalCount = exams.length + quick.length + (customCard ? 1 : 0);
+    var label = diff === 'all' ? 'All' : diff === 'low' ? 'Low (Easy)' : diff === 'hard' ? 'Hard' : 'Medium';
+    if ($('#examFilterCount')) $('#examFilterCount').innerHTML = 'Showing <strong>' + label + '</strong> tests (' + totalCount + ' available)';
+
+    $$('#diffFilterTabs .diff-tab').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.diff === diff);
+    });
   }
+
+  var diffFilterTabs = $('#diffFilterTabs');
+  if (diffFilterTabs) {
+    diffFilterTabs.addEventListener('click', function (e) {
+      var btn = e.target.closest('.diff-tab');
+      if (!btn) return;
+      currentExamDiff = btn.dataset.diff || 'all';
+      renderExams();
+    });
+  }
+
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-exam]');
     if (!b) return;
     var id = b.dataset.exam;
-    if (id === 'custom') openSetup({ id: 'custom', icon: '✍️', name: 'Your own test', sub: 'Custom', lang: 'en', pool: 'custom', min: 5, wpm: 0, err: 100, backspace: true, note: 'Paste any passage and set your own duration.' });
+    if (id === 'custom') openSetup({ id: 'custom', icon: '✍️', name: 'Your own test', sub: 'Custom', lang: 'en', pool: 'custom', min: 5, wpm: 0, err: 100, backspace: true, difficulty: 'medium', note: 'Paste any passage and set your own duration.' });
     else openSetup(allPresets().filter(function (x) { return x.id === id; })[0]);
   });
 
@@ -135,16 +171,75 @@
 
   /* ---------------- setup ---------------- */
   var S = null; // preset being set up
+  var currentSetupDiff = 'medium';
+  var DIFF_DESCS = {
+    low: '<b id="setupDiffTitle">Low (Easy)</b>: Everyday vocabulary, shorter sentences, and simple punctuation. Ideal for building speed and confidence.',
+    medium: '<b id="setupDiffTitle">Medium</b>: Standard government exam vocabulary, official terminology, and realistic sentence complexity.',
+    hard: '<b id="setupDiffTitle">Hard</b>: Formal administrative & legal terminology, complex punctuation, numbers, and dense phrasing.'
+  };
+
+  function setSetupDifficulty(diff) {
+    currentSetupDiff = (diff === 'easy' ? 'low' : diff) || 'medium';
+    $$('#setupDiffTabs .diff-tab').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.diff === currentSetupDiff);
+    });
+    var descEl = $('#setupDiffDesc');
+    if (descEl) descEl.innerHTML = DIFF_DESCS[currentSetupDiff] || DIFF_DESCS.medium;
+    fillPassageOptions();
+    rules();
+  }
+
+  var setupDiffTabsEl = $('#setupDiffTabs');
+  if (setupDiffTabsEl) {
+    setupDiffTabsEl.addEventListener('click', function (e) {
+      var btn = e.target.closest('.diff-tab');
+      if (!btn) return;
+      setSetupDifficulty(btn.dataset.diff);
+    });
+  }
+
+  function fillPassageOptions() {
+    var langEl = $('#sLang'), poolEl = $('#sPool'), passSel = $('#sPassageSelect');
+    if (!langEl || !poolEl || !passSel) return;
+    var lang = langEl.value;
+    var poolType = poolEl.value;
+    if (poolType === 'custom' || poolType === 'data') {
+      passSel.innerHTML = '<option value="random">Generated dynamically</option>';
+      passSel.disabled = true;
+      return;
+    }
+    passSel.disabled = false;
+    var pool = D.getPassagePool(lang, poolType, currentSetupDiff);
+    var h = '<option value="random">🎲 Random passage (' + pool.length + ' available)</option>';
+    for (var i = 0; i < pool.length; i++) {
+      var snippet = pool[i].slice(0, 36).replace(/['"]/g, '') + '...';
+      h += '<option value="' + i + '">Passage ' + (i + 1) + ': ' + esc(snippet) + '</option>';
+    }
+    var oldVal = passSel.value;
+    passSel.innerHTML = h;
+    if (oldVal && passSel.querySelector('option[value="' + oldVal + '"]')) {
+      passSel.value = oldVal;
+    } else {
+      passSel.value = 'random';
+    }
+  }
+
   function openSetup(x, lesson) {
     S = Object.assign({}, x);
     $('#setupTitle').textContent = x.name + ' · ' + x.sub;
     $('#setupNote').textContent = x.note || '';
     $('#sName').value = settings.name || '';
     $('#sLang').value = x.lang;
+
+    var initialDiff = (currentExamDiff !== 'all') ? currentExamDiff : (x.difficulty || 'medium');
+    setSetupDifficulty(initialDiff);
+
     fillPoolOptions(x.lang, x.pool);
+    fillPassageOptions();
     $('#sMin').value = x.min;
     $('#sWpm').value = x.kdph || x.wpm;
-    $('#sWpm').previousElementSibling.textContent = x.kdph ? 'Passing speed (key depressions per hour)' : 'Passing speed (WPM)';
+    var wpmLabel = $('#sWpmLabel') || $('#sWpm').previousElementSibling;
+    if (wpmLabel) wpmLabel.textContent = x.kdph ? 'Passing speed (key depressions per hour)' : 'Passing speed (WPM)';
     $('#sBack').checked = x.backspace;
     $('#sBlind').checked = !!x.blindDefault;
     $('#sKb').checked = settings.kb && x.lang === 'en' && !x.kdph && x.min <= 5;
@@ -153,37 +248,53 @@
     rules();
     show('setup');
   }
+
   function fillPoolOptions(lang, sel) {
     var o = lang === 'hi' ? [['hindi', 'General (हिंदी)'], ['custom', 'My own text']] : [['general', 'General'], ['legal', 'Legal'], ['data', 'Data entry'], ['custom', 'My own text']];
     $('#sPool').innerHTML = o.map(function (p) { return '<option value="' + p[0] + '">' + p[1] + '</option>'; }).join('');
     $('#sPool').value = o.some(function (p) { return p[0] === sel; }) ? sel : o[0][0];
   }
+
   function formCfg() {
     var wv = +$('#sWpm').value || 0;
     var c = Object.assign({}, S, {
-      lang: $('#sLang').value, pool: $('#sPool').value, min: Math.max(1, Math.min(60, +$('#sMin').value || 1)),
+      lang: $('#sLang').value, pool: $('#sPool').value, difficulty: currentSetupDiff,
+      passageIndex: $('#sPassageSelect') ? $('#sPassageSelect').value : 'random',
+      min: Math.max(1, Math.min(60, +$('#sMin').value || 1)),
       backspace: $('#sBack').checked, blind: $('#sBlind').checked, kb: $('#sKb').checked && $('#sLang').value === 'en',
       candidate: $('#sName').value.trim() || 'Candidate', custom: $('#sCustom').value
     });
     if (S.kdph) { c.kdph = wv; c.wpm = 0; } else { c.wpm = wv; c.kdph = 0; }
     return c;
   }
+
   function rules() {
     var c = formCfg();
-    var rows = [['Language', c.lang === 'hi' ? 'हिंदी (Unicode)' : 'English'], ['Duration', c.min + ' minutes'],
+    var diffLabel = c.difficulty === 'low' ? 'Low (Easy)' : c.difficulty === 'hard' ? 'Hard (Advanced)' : 'Medium (Standard)';
+    var rows = [
+      ['Language', c.lang === 'hi' ? 'हिंदी (Unicode)' : 'English'],
+      ['Difficulty', diffLabel],
+      ['Duration', c.min + ' minutes'],
       ['Passing speed', c.kdph ? c.kdph.toLocaleString('en-IN') + ' key depressions / hour' : c.wpm ? c.wpm + ' WPM net' : 'None, practice only'],
       ['Mistake limit', c.err < 100 ? c.err + '% of typed words' : 'None'],
-      ['Backspace', c.backspace ? 'Allowed' : 'Locked'], ['Colours while typing', c.blind ? 'Hidden (blind mode)' : 'Shown']];
+      ['Backspace', c.backspace ? 'Allowed' : 'Locked'],
+      ['Colours while typing', c.blind ? 'Hidden (blind mode)' : 'Shown']
+    ];
     $('#rulesTable').innerHTML = rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + esc(r[1]) + '</td></tr>'; }).join('');
     $('#setupHint').textContent = c.lang === 'hi' ? 'Switch Windows to the Hindi InScript keyboard (Win + Space) before you start. The passage is compared as Unicode text.' : 'Sit straight, rest your wrists, and aim for accuracy first. Speed follows.';
     $('#sCustomWrap').classList.toggle('hide', c.pool !== 'custom');
   }
-  ['sLang', 'sPool', 'sMin', 'sWpm', 'sBack', 'sBlind', 'sKb'].forEach(function (id) {
-    $('#' + id).addEventListener('change', function () {
-      if (id === 'sLang') { fillPoolOptions($('#sLang').value, null); if ($('#sLang').value === 'hi') $('#sKb').checked = false; }
+
+  ['sLang', 'sPool', 'sMin', 'sWpm', 'sBack', 'sBlind', 'sKb', 'sPassageSelect'].forEach(function (id) {
+    var el = $('#' + id);
+    if (!el) return;
+    el.addEventListener('change', function () {
+      if (id === 'sLang') { fillPoolOptions($('#sLang').value, null); fillPassageOptions(); if ($('#sLang').value === 'hi') $('#sKb').checked = false; }
+      if (id === 'sPool') { fillPassageOptions(); }
       rules();
     });
   });
+
   $('#sRead').addEventListener('change', function () { $('#goTest').disabled = !this.checked; });
   $('#goTest').addEventListener('click', function () {
     var c = formCfg();
@@ -199,7 +310,15 @@
     var words = Math.ceil(c.min * base * 1.4);
     if (c.pool === 'custom') return c.custom.replace(/\s+/g, ' ').trim();
     if (c.pool === 'data') return D.dataEntry(words);
-    var pool = D.POOLS[c.lang === 'hi' ? 'hindi' : (c.pool === 'legal' ? 'legal' : 'general')];
+    var pool = D.getPassagePool(c.lang, c.pool, c.difficulty);
+    if (c.passageIndex && c.passageIndex !== 'random') {
+      var pIdx = parseInt(c.passageIndex, 10);
+      if (!isNaN(pIdx) && pool[pIdx]) {
+        var chosen = pool[pIdx];
+        if (E.tokenize(chosen).length >= words) return chosen;
+        return E.buildPassage([chosen].concat(pool), words);
+      }
+    }
     return E.buildPassage(pool, words);
   }
 
@@ -222,7 +341,8 @@
     T = { cfg: c, passage: c.passage, refWords: E.tokenize(c.passage), refChars: refChars, started: false, running: true, done: false,
       keys: 0, wrong: 0, back: 0, prev: [], ok: 0, t0: 0, timeline: [], lastSec: -1, cur: -1, els: [] };
     show('test');
-    $('#tExam').textContent = c.name + ' · ' + c.sub;
+    var diffName = c.difficulty ? c.difficulty.charAt(0).toUpperCase() + c.difficulty.slice(1) : 'Medium';
+    $('#tExam').textContent = c.name + ' · ' + c.sub + ' (' + diffName + ')';
     $('#tName').textContent = c.candidate;
     $('#tLive').classList.toggle('hide', !!c.blind);
     $('#tTimer').textContent = fmt(c.min * 60); $('#tTimer').classList.remove('low');
@@ -424,7 +544,7 @@
   function history() { return store.get('history', []); }
   function saveHistory(r) {
     var h = history(), c = r.cfg;
-    h.push({ ts: r.ts, id: c.id, name: c.name + ' · ' + c.sub, lang: c.lang, mode: c.mode || 'exam', dur: c.min * 60, el: Math.round(r.elapsedSec), net: +r.net.toFixed(1), gross: +r.gross.toFixed(1), kdph: Math.round(r.kdph), acc: +r.wordAccuracy.toFixed(1), full: r.fullMistakes, half: r.halfMistakes, words: r.typedWords, pass: r.pass, cand: c.candidate, target: c.kdph ? c.kdph + ' KDPH' : c.wpm ? c.wpm + ' WPM' : '-' });
+    h.push({ ts: r.ts, id: c.id, name: c.name + ' · ' + c.sub + (c.difficulty ? ' [' + c.difficulty.toUpperCase() + ']' : ''), lang: c.lang, mode: c.mode || 'exam', dur: c.min * 60, el: Math.round(r.elapsedSec), net: +r.net.toFixed(1), gross: +r.gross.toFixed(1), kdph: Math.round(r.kdph), acc: +r.wordAccuracy.toFixed(1), full: r.fullMistakes, half: r.halfMistakes, words: r.typedWords, pass: r.pass, cand: c.candidate, target: c.kdph ? c.kdph + ' KDPH' : c.wpm ? c.wpm + ' WPM' : '-' });
     if (h.length > 500) h = h.slice(-500);
     store.set('history', h);
   }
@@ -443,7 +563,8 @@
     var hasTarget = (r.rules.targetKdph || r.rules.targetWpm);
     st.innerHTML = r.pass ? (hasTarget ? 'PASS' : 'DONE') + '<small>' + esc(c.name) + '</small>' : 'NOT YET<small>' + esc(c.name) + '</small>';
     $('#rTitle').textContent = r.pass ? (hasTarget ? 'You cleared it.' : 'Test finished.') : 'Close, keep going.';
-    $('#rSub').textContent = c.candidate + ' · ' + c.name + ' ' + c.sub + ' · ' + new Date(r.ts).toLocaleString();
+    var diffName = c.difficulty ? c.difficulty.charAt(0).toUpperCase() + c.difficulty.slice(1) : 'Medium';
+    $('#rSub').textContent = c.candidate + ' · ' + c.name + ' ' + c.sub + ' (' + diffName + ') · ' + new Date(r.ts).toLocaleString();
     $('#rReasons').textContent = r.pass ? '' : r.reasons.join(' ');
     $('#rCert').classList.toggle('hide', !(r.pass && hasTarget && c.mode !== 'lesson'));
     var nextOk = c.mode === 'lesson' && r.pass && c.lesson.id < D.LESSONS.length;
@@ -640,7 +761,7 @@
   /* ---------------- boot ---------------- */
   window.TK = { $: $, $$: $$, store: store, settings: settings, toast: toast, click: click, animOn: animOn, esc: esc };
   applySettings();
-  $('#homeExams').innerHTML = D.EXAMS.slice(0, 6).map(card).join('');
+  $('#homeExams').innerHTML = D.EXAMS.slice(0, 8).map(card).join('');
   // Offline cache is for the browser/PWA only. The Windows app already ships its files, and a cache there would hide updates.
   var inTauri = !!(window.__TAURI_INTERNALS__ || window.__TAURI__) || location.hostname === 'tauri.localhost';
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !inTauri) navigator.serviceWorker.register('sw.js').catch(function () { });

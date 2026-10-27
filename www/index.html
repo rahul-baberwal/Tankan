@@ -119,11 +119,25 @@
 
 <!-- ================= EXAMS ================= -->
 <section class="view" id="view-exams"><div class="page"><div class="wrap">
-  <h1>Exams</h1>
-  <p class="muted">Presets follow public notices reported by typing-practice sites in October 2026. Speeds and error limits change between years and posts, so always check your own notice.</p>
-  <h3 style="margin-top:26px">Government exam patterns</h3>
+  <div class="exams-header-flex">
+    <div>
+      <h1>Exams</h1>
+      <p class="muted">Presets follow public notices reported by typing-practice sites in October 2026. Speeds and error limits change between years and posts, so always check your own notice.</p>
+    </div>
+    <div class="diff-filter-bar">
+      <span class="diff-filter-label">Select Difficulty:</span>
+      <div class="diff-tabs" role="tablist" id="diffFilterTabs">
+        <button type="button" class="diff-tab active" data-diff="all">All</button>
+        <button type="button" class="diff-tab tab-low" data-diff="low"><span class="dot"></span> Low</button>
+        <button type="button" class="diff-tab tab-med" data-diff="medium"><span class="dot"></span> Medium</button>
+        <button type="button" class="diff-tab tab-hard" data-diff="hard"><span class="dot"></span> Hard</button>
+      </div>
+    </div>
+  </div>
+  <p class="muted small" id="examFilterCount">Showing <strong>All</strong> tests (<span id="examCountNum">19</span> available)</p>
+  <h3 style="margin-top:24px" id="govHeader">Government exam patterns</h3>
   <div class="grid exams" id="examList"></div>
-  <h3 style="margin-top:34px">Quick tests and your own text</h3>
+  <h3 style="margin-top:34px" id="quickHeader">Quick tests and your own text</h3>
   <div class="grid exams" id="quickList"></div>
 </div></div></section>
 
@@ -140,14 +154,31 @@
     <div class="card">
       <h3>Your set-up</h3>
       <label class="field"><span>Candidate name</span><input type="text" id="sName" maxlength="40" placeholder="Name as it should appear on results"></label>
+
+      <!-- Difficulty Switcher (Low, Medium, Hard) -->
+      <div class="field">
+        <span class="diff-field-label">Difficulty level</span>
+        <div class="diff-tabs" role="tablist" id="setupDiffTabs">
+          <button type="button" class="diff-tab tab-low" data-diff="low"><span class="dot"></span> Low</button>
+          <button type="button" class="diff-tab tab-med active" data-diff="medium"><span class="dot"></span> Medium</button>
+          <button type="button" class="diff-tab tab-hard" data-diff="hard"><span class="dot"></span> Hard</button>
+        </div>
+        <div class="diff-desc-box" id="setupDiffDesc">
+          <b id="setupDiffTitle">Medium</b>: Standard government exam vocabulary, official terminology, and realistic sentence complexity.
+        </div>
+      </div>
+
       <div class="row2">
         <label class="field"><span>Language</span><select id="sLang"><option value="en">English</option><option value="hi">हिंदी (Unicode)</option></select></label>
         <label class="field"><span>Passage type</span><select id="sPool"><option value="general">General</option><option value="legal">Legal</option><option value="data">Data entry</option><option value="custom">My own text</option></select></label>
       </div>
+      <div class="row2" id="sPassageRow">
+        <label class="field"><span>Passage selection</span><select id="sPassageSelect"><option value="random">Random passage</option></select></label>
+        <label class="field"><span>Duration (minutes)</span><input type="number" id="sMin" min="1" max="60"></label>
+      </div>
       <label class="field hide" id="sCustomWrap"><span>Paste your passage</span><textarea id="sCustom" rows="4" placeholder="Paste at least 40 words"></textarea></label>
       <div class="row2">
-        <label class="field"><span>Duration (minutes)</span><input type="number" id="sMin" min="1" max="60"></label>
-        <label class="field"><span>Passing speed (WPM)</span><input type="number" id="sWpm" min="0" max="200"></label>
+        <label class="field"><span id="sWpmLabel">Passing speed (WPM)</span><input type="number" id="sWpm" min="0" max="200"></label>
       </div>
       <label class="check"><input type="checkbox" id="sBack"><span><b>Allow Backspace</b><br><small class="muted">Off locks Backspace, Delete and the arrow keys.</small></span></label>
       <label class="check"><input type="checkbox" id="sBlind"><span><b>Blind mode</b><br><small class="muted">No colours while typing. Mistakes show at the end.</small></span></label>
