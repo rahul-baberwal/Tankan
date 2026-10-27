@@ -288,8 +288,18 @@
     var c = els[Math.min(cur, els.length - 1)];
     if (c) {
       var top = c.offsetTop, h = pass.clientHeight;
-      if (top > pass.scrollTop + h * 0.62 || top < pass.scrollTop) pass.scrollTop = Math.max(0, top - h * 0.28);
+      if (top < pass.scrollTop + 10) {
+        pass.scrollTop = Math.max(0, top - h * 0.2);
+      } else if (top > pass.scrollTop + h * 0.58) {
+        pass.scrollTop = Math.max(0, top - h * 0.25);
+      }
     }
+  }
+
+  function isCharEqual(a, b) {
+    if (a === b) return true;
+    if ((a === '\n' || a === ' ') && (b === ' ' || b === '\n')) return true;
+    return false;
   }
 
   inp.addEventListener('input', function () {
@@ -297,7 +307,7 @@
     if (!T.started) beginClock();
     var cur = E.chars(inp.value), prev = T.prev, d = cur.length - prev.length;
     var prevOk = T.ok, ok = 0, ref = T.refChars;
-    while (ok < cur.length && ok < ref.length && cur[ok] === ref[ok]) ok++;
+    while (ok < cur.length && ok < ref.length && isCharEqual(cur[ok], ref[ok])) ok++;
     if (d > 0) { T.keys += d; if (prevOk === prev.length && ok < cur.length) T.wrong++; }
     else if (d < 0) T.back += -d;
     T.ok = ok; T.prev = cur;
@@ -310,7 +320,20 @@
     if (!T || T.done) return;
     var strict = !T.cfg.backspace;
     if (e.key === 'Tab') { e.preventDefault(); return; }
-    if (e.key === 'Enter') { e.preventDefault(); var start = inp.selectionStart, end = inp.selectionEnd; inp.value = inp.value.substring(0, start) + ' ' + inp.value.substring(end); inp.selectionStart = inp.selectionEnd = start + 1; inp.dispatchEvent(new Event('input')); return; }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      var start = inp.selectionStart, end = inp.selectionEnd;
+      var val = inp.value;
+      if (start > 0 && val.charAt(start - 1) === ' ') {
+        inp.value = val.substring(0, start - 1) + '\n' + val.substring(end);
+        inp.selectionStart = inp.selectionEnd = start;
+      } else {
+        inp.value = val.substring(0, start) + '\n' + val.substring(end);
+        inp.selectionStart = inp.selectionEnd = start + 1;
+      }
+      inp.dispatchEvent(new Event('input'));
+      return;
+    }
     if (strict && (BLOCK_STRICT.indexOf(e.key) >= 0 || ((e.ctrlKey || e.metaKey) && 'zyaxv'.indexOf(e.key.toLowerCase()) >= 0))) { e.preventDefault(); return; }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') { e.preventDefault(); return; }
     click(e.key === 'Backspace' ? 700 : 1400);
@@ -320,7 +343,7 @@
   inp.addEventListener('beforeinput', function (e) {
     if (!T) return;
     var t = e.inputType || '';
-    if (/^insertFromPaste|^insertFromDrop|^insertLineBreak|^insertParagraph/.test(t)) e.preventDefault();
+    if (/^insertFromPaste|^insertFromDrop/.test(t)) e.preventDefault();
     if (!T.cfg.backspace && /^delete|^history/.test(t)) e.preventDefault();
   });
   ['paste', 'drop', 'cut', 'copy', 'contextmenu'].forEach(function (ev) { inp.addEventListener(ev, function (e) { e.preventDefault(); }); });
