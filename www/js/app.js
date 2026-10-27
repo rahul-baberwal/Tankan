@@ -148,7 +148,7 @@
     $('#sBack').checked = x.backspace;
     $('#sBlind').checked = !!x.blindDefault;
     $('#sKb').checked = settings.kb && x.lang === 'en' && !x.kdph && x.min <= 5;
-    $('#sRead').checked = false; $('#goTest').disabled = true;
+    $('#sRead').checked = true; $('#goTest').disabled = false;
     $('#sCustomWrap').classList.toggle('hide', x.pool !== 'custom');
     rules();
     show('setup');
@@ -309,7 +309,8 @@
   inp.addEventListener('keydown', function (e) {
     if (!T || T.done) return;
     var strict = !T.cfg.backspace;
-    if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); return; }
+    if (e.key === 'Tab') { e.preventDefault(); return; }
+    if (e.key === 'Enter') { e.preventDefault(); var start = inp.selectionStart, end = inp.selectionEnd; inp.value = inp.value.substring(0, start) + ' ' + inp.value.substring(end); inp.selectionStart = inp.selectionEnd = start + 1; inp.dispatchEvent(new Event('input')); return; }
     if (strict && (BLOCK_STRICT.indexOf(e.key) >= 0 || ((e.ctrlKey || e.metaKey) && 'zyaxv'.indexOf(e.key.toLowerCase()) >= 0))) { e.preventDefault(); return; }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') { e.preventDefault(); return; }
     click(e.key === 'Backspace' ? 700 : 1400);
