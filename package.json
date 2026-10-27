@@ -1,0 +1,21 @@
+{
+  "name": "tankan",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Typing test practice for Indian government exams. One web codebase for Windows (Tauri), Android (Capacitor) and the browser.",
+  "scripts": {
+    "test": "node tests/engine.test.js",
+    "serve": "npx --yes serve www -l 5173",
+    "tauri": "tauri",
+    "build:windows": "tauri build",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync android",
+    "cap:open": "cap open android"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "@capacitor/cli": "^6",
+    "@capacitor/core": "^6",
+    "@capacitor/android": "^6"
+  }
+}

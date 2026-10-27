@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tankan — typing test practice for government exams</title>
+<meta name="description" content="Free offline typing test for SSC, RRB, CPCT, High Court and police exams, in English and Hindi.">
+<meta name="theme-color" content="#15a6f0">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="sr" href="#main">Skip to content</a>
+
+<header class="nav no-print">
+  <div class="wrap">
+    <a class="logo" href="#/home" aria-label="Tankan home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#15a6f0"/><rect x="11" y="10" width="42" height="40" rx="9" fill="#0b84c4"/><rect x="11" y="8" width="42" height="40" rx="9" fill="#fff"/><path d="M22 20h20v5.5h-7.2V40h-5.6V25.5H22z" fill="#0c1b2a"/><rect x="40" y="33" width="3" height="9" rx="1.5" fill="#15a6f0"/></svg>
+      Tankan <small>टंकण</small>
+    </a>
+    <button class="burger" id="burger" aria-label="Menu">☰</button>
+    <ul id="menu">
+      <li><a href="#/home" data-nav="home">Home</a></li>
+      <li><a href="#/exams" data-nav="exams">Exams</a></li>
+      <li><a href="#/practice" data-nav="practice">Lessons</a></li>
+      <li><a href="#/game" data-nav="game">Word rain</a></li>
+      <li><a href="#/progress" data-nav="progress">Progress</a></li>
+      <li><a href="#/settings" data-nav="settings">Settings</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" id="view-home">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Typing practice that behaves like the real exam.</h1>
+        <p class="lead">Timed passages for SSC, Railway, CPCT, courts and police tests in English and हिंदी. Scored with the same word-by-word rule the commissions use. Free, no sign-up, and it works without internet.</p>
+        <div class="cta">
+          <a class="btn" href="#/exams">⌨️ Pick your exam</a>
+          <button class="btn alt" id="quickStart">⚡ 5 minute test</button>
+        </div>
+        <small>Your results stay on this device.</small>
+      </div>
+      <div class="stickers">
+        <div class="sticker">100% free</div>
+        <div class="win" aria-hidden="true">
+          <div class="win-bar"><i></i><i></i><i></i><b>SSC CHSL · LDC/JSA · 10:00</b></div>
+          <div class="win-body">
+            <div class="demo-pass" id="demoPass"></div>
+            <div class="demo-stats">
+              <div><b id="dWpm">0</b><span>net WPM</span></div>
+              <div><b id="dAcc">100%</b><span>accuracy</span></div>
+              <div><b id="dErr">0</b><span>mistakes</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap">
+      <div class="sec-head"><h2>Choose the test you are applying for</h2><p>Each one is set to the duration, speed and backspace rule from its notice. You can change any of them before you start.</p></div>
+      <div class="grid exams" id="homeExams"></div>
+      <p style="margin-top:18px"><a class="btn alt" href="#/exams">See all exams</a></p>
+    </div>
+  </div>
+
+  <div class="sec white">
+    <div class="wrap split">
+      <div>
+        <h2>Scored the way the commission scores</h2>
+        <p class="muted">Every word you type is lined up against the passage. A wrong, missing or extra word is a full mistake. A word that differs only in capital letters or punctuation is half a mistake.</p>
+        <ul class="ticks">
+          <li>Net speed drops by every mistake, not only the final percentage</li>
+          <li>Data-entry tests are judged on key depressions per hour</li>
+          <li>A word you were halfway through when time ended is not counted against you</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="formula">Net WPM = (characters ÷ 5 − full mistakes − half mistakes ÷ 2) ÷ minutes<br>Key depressions per hour = key presses ÷ minutes × 60</div>
+        <p class="muted" style="margin:12px 0 0;font-size:.9rem">The same two formulas appear on the practice sites we studied. Your exam notice has the last word.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap split rev">
+      <div class="card tgl-demo" aria-hidden="true">
+        <div class="tgl">Backspace locked <span class="sw on"></span></div>
+        <div class="tgl">Blind mode, errors hidden until the end <span class="sw on"></span></div>
+        <div class="tgl">Paste and right-click blocked <span class="sw on"></span></div>
+        <div class="tgl">Live colouring while you practise <span class="sw"></span></div>
+      </div>
+      <div>
+        <h2>Practise strict, or practise gently</h2>
+        <p class="muted">The railway test locks Backspace, so the RRB presets lock it too. When you are learning, switch on live colouring and an on-screen keyboard that shows the next key and the finger to use.</p>
+        <a class="btn alt" href="#/practice">Try the lessons</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec white">
+    <div class="wrap">
+      <div class="sec-head"><h2>Hindi follows your keyboard</h2><p>Hindi passages are Unicode (Mangal). Type with the Hindi InScript keyboard that comes with Windows: press <b>Win + Space</b> to switch. On Android, use any Hindi keyboard. Kruti Dev and Remington layouts need their own input tool, which Tankan does not replace.</p></div>
+      <ol class="steps">
+        <li><b>Choose a test</b><br><span class="muted">Read the rules, enter your name.</span></li>
+        <li><b>Type the passage</b><br><span class="muted">The clock starts with your first key.</span></li>
+        <li><b>Read your result</b><br><span class="muted">See every mistake, and save a practice certificate.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EXAMS ================= -->
+<section class="view" id="view-exams"><div class="page"><div class="wrap">
+  <h1>Exams</h1>
+  <p class="muted">Presets follow public notices reported by typing-practice sites in October 2026. Speeds and error limits change between years and posts, so always check your own notice.</p>
+  <h3 style="margin-top:26px">Government exam patterns</h3>
+  <div class="grid exams" id="examList"></div>
+  <h3 style="margin-top:34px">Quick tests and your own text</h3>
+  <div class="grid exams" id="quickList"></div>
+</div></div></section>
+
+<!-- ================= SETUP ================= -->
+<section class="view" id="view-setup"><div class="page"><div class="wrap">
+  <h1 id="setupTitle">Test</h1>
+  <p class="muted" id="setupNote"></p>
+  <div class="setup">
+    <div class="card">
+      <h3>Rules for this test</h3>
+      <table class="rules" id="rulesTable"></table>
+      <div class="note" id="setupHint"></div>
+    </div>
+    <div class="card">
+      <h3>Your set-up</h3>
+      <label class="field"><span>Candidate name</span><input type="text" id="sName" maxlength="40" placeholder="Name as it should appear on results"></label>
+      <div class="row2">
+        <label class="field"><span>Language</span><select id="sLang"><option value="en">English</option><option value="hi">हिंदी (Unicode)</option></select></label>
+        <label class="field"><span>Passage type</span><select id="sPool"><option value="general">General</option><option value="legal">Legal</option><option value="data">Data entry</option><option value="custom">My own text</option></select></label>
+      </div>
+      <label class="field hide" id="sCustomWrap"><span>Paste your passage</span><textarea id="sCustom" rows="4" placeholder="Paste at least 40 words"></textarea></label>
+      <div class="row2">
+        <label class="field"><span>Duration (minutes)</span><input type="number" id="sMin" min="1" max="60"></label>
+        <label class="field"><span>Passing speed (WPM)</span><input type="number" id="sWpm" min="0" max="200"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="sBack"><span><b>Allow Backspace</b><br><small class="muted">Off locks Backspace, Delete and the arrow keys.</small></span></label>
+      <label class="check"><input type="checkbox" id="sBlind"><span><b>Blind mode</b><br><small class="muted">No colours while typing. Mistakes show at the end.</small></span></label>
+      <label class="check"><input type="checkbox" id="sKb"><span><b>Show on-screen keyboard</b><br><small class="muted">Highlights the next key. Switch it off for the real feel.</small></span></label>
+      <label class="check"><input type="checkbox" id="sRead"><span>I have read the rules above.</span></label>
+      <p style="margin-top:14px"><button class="btn" id="goTest" disabled>▶ Start test</button></p>
+    </div>
+  </div>
+</div></div></section>
+
+<!-- ================= TEST ================= -->
+<section class="view" id="view-test"><div class="page" style="padding-top:20px"><div class="wrap">
+  <div class="tbar">
+    <div class="who"><span id="tExam">Exam</span><small id="tName">Candidate</small></div>
+    <div class="sp"></div>
+    <div class="live" id="tLive">
+      <div><b id="lWpm">0</b><span>WPM</span></div>
+      <div><b id="lWords">0</b><span>words</span></div>
+      <div><b id="lKeys">0</b><span>keys</span></div>
+    </div>
+    <div class="timer" id="tTimer" role="timer" aria-live="off">10:00</div>
+  </div>
+  <div class="bar"><i id="tBar"></i></div>
+  <div class="passage" id="tPassage" aria-label="Passage to type"></div>
+  <textarea class="typearea" id="tInput" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Type here" placeholder="Click here and start typing. The clock starts with your first key."></textarea>
+  <div class="tact">
+    <button class="btn" id="tSubmit">Submit test</button>
+    <button class="btn alt" id="tRestart">Restart</button>
+    <button class="btn alt" id="tQuit">Leave</button>
+    <span class="muted" id="tMsg"></span>
+  </div>
+  <div class="kb" id="kb" aria-hidden="true"></div>
+</div></div></section>
+
+<!-- ================= RESULT ================= -->
+<section class="view" id="view-result"><div class="page"><div class="wrap">
+  <div class="res-top">
+    <div class="stamp" id="rStamp">PASS</div>
+    <div>
+      <h1 id="rTitle">Result</h1>
+      <p class="muted" id="rSub"></p>
+      <p class="reasons" id="rReasons"></p>
+      <div class="tact">
+        <button class="btn" id="rAgain">Try again</button>
+        <button class="btn alt" id="rNew">New passage</button>
+        <button class="btn alt hide" id="rCert">🏅 Practice certificate</button>
+        <button class="btn alt" id="rNext">Next lesson</button>
+      </div>
+    </div>
+  </div>
+  <div class="tiles" id="rTiles"></div>
+  <h3>Speed through the test</h3>
+  <canvas class="chart" id="rChart" width="1100" height="220"></canvas>
+  <div id="rWeakWrap" style="margin-top:18px"><h3>Keys to practise</h3><div class="chips" id="rWeak"></div></div>
+  <h3 style="margin-top:22px">Your typing against the passage</h3>
+  <p class="muted" style="font-size:.9rem">Red: wrong word, with the correct one in green. Orange dotted: capital or punctuation only (half mistake). Struck orange: extra word. Underlined italic: skipped word.</p>
+  <div class="review" id="rReview"></div>
+</div></div></section>
+
+<!-- ================= LESSONS ================= -->
+<section class="view" id="view-practice"><div class="page"><div class="wrap">
+  <h1>Lessons</h1>
+  <p class="muted">Twelve short drills, from the home row to full exam passages. Reach the speed with 95% accuracy to earn stars and unlock the next one.</p>
+  <div class="grid lessons" id="lessonGrid"></div>
+</div></div></section>
+
+<!-- ================= GAME ================= -->
+<section class="view" id="view-game"><div class="page"><div class="wrap">
+  <h1>Word rain</h1>
+  <p class="muted">Type each word before it reaches the ground. Press Space or Enter to send it. Three lives.</p>
+  <div class="tact" style="margin-bottom:12px">
+    <select id="gLang" aria-label="Game language"><option value="en">English</option><option value="hi">हिंदी</option></select>
+    <button class="btn" id="gStart">▶ Play</button>
+    <span class="muted">Score <b id="gScore">0</b> · Level <b id="gLevel">1</b> · Lives <b id="gLives">❤️❤️❤️</b> · Best <b id="gBest">0</b></span>
+  </div>
+  <div class="gamebox">
+    <canvas id="gcv" width="960" height="540"></canvas>
+    <div class="gover hide" id="gOver"><div><h2>Game over</h2><p id="gOverTxt"></p><button class="btn" id="gAgain">Play again</button></div></div>
+  </div>
+  <div class="ginput"><input id="gIn" type="text" autocomplete="off" spellcheck="false" aria-label="Type the falling word" placeholder="Type here"></div>
+</div></div></section>
+
+<!-- ================= PROGRESS ================= -->
+<section class="view" id="view-progress"><div class="page"><div class="wrap">
+  <h1>Progress</h1>
+  <div class="tiles" id="pTiles"></div>
+  <h3>Net speed, last 30 tests</h3>
+  <canvas class="chart" id="pChart" width="1100" height="220"></canvas>
+  <div class="tact" style="margin:18px 0">
+    <button class="btn alt sm" id="pCsv">Export CSV</button>
+    <button class="btn alt sm" id="pJson">Back up (JSON)</button>
+    <label class="btn alt sm" style="cursor:pointer">Restore backup<input type="file" id="pImport" accept="application/json" class="sr"></label>
+    <button class="btn alt sm danger" id="pClear" style="color:#fff">Clear all</button>
+  </div>
+  <div style="overflow:auto"><table class="t" id="pTable"></table></div>
+</div></div></section>
+
+<!-- ================= SETTINGS ================= -->
+<section class="view" id="view-settings"><div class="page"><div class="wrap" style="max-width:720px">
+  <h1>Settings</h1>
+  <div class="card">
+    <label class="field"><span>Your name</span><input type="text" id="stName" maxlength="40"></label>
+    <div class="row2">
+      <label class="field"><span>Theme</span><select id="stTheme"><option value="auto">Match system</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label class="field"><span>Passage text size</span><select id="stSize"><option value="16">Small</option><option value="20">Medium</option><option value="24">Large</option><option value="28">Extra large</option></select></label>
+    </div>
+    <div class="row2">
+      <label class="field"><span>Passage font</span><select id="stFont"><option value="exam">Exam style (Verdana / Mangal)</option><option value="mono">Monospace</option><option value="serif">Serif (Georgia)</option></select></label>
+      <label class="field"><span>Start the clock</span><select id="stClock"><option value="key">On my first key</option><option value="start">When the test opens</option></select></label>
+    </div>
+    <label class="check"><input type="checkbox" id="stSound"><span>Key click sound</span></label>
+    <label class="check"><input type="checkbox" id="stAnim"><span>Animations and confetti</span></label>
+  </div>
+  <p class="muted" style="margin-top:18px">Tankan is an independent practice tool. It is not connected with SSC, RRB, or any government body, and its certificates are not official.</p>
+</div></div></section>
+
+<!-- ================= CERTIFICATE ================= -->
+<section class="view" id="view-cert"><div class="page"><div class="wrap">
+  <div class="tact no-print"><button class="btn" id="cPrint">🖨️ Print or save as PDF</button><button class="btn alt" id="cBack">Back</button></div>
+  <div class="cert" id="certBox"></div>
+</div></div></section>
+
+</main>
+
+<footer class="no-print">
+  <div class="wrap">
+    <div>
+      <h4>Tankan · टंकण</h4>
+      <p>A free typing test simulator for Indian government exams. Built to run offline on Windows, in a browser, and later on Android.</p>
+    </div>
+    <div>
+      <h4>Practise</h4>
+      <a href="#/exams">All exams</a><a href="#/practice">Lessons</a><a href="#/game">Word rain</a><a href="#/progress">Your progress</a>
+    </div>
+    <div>
+      <h4>Good to know</h4>
+      <a href="#/settings">Settings</a><a href="#/home">Back to top</a>
+    </div>
+    <div class="fine">Not affiliated with SSC, RRB, UPSSSC, any High Court or any other recruiting body. Passages are original practice text. Speeds and rules are practice defaults taken from public notices; confirm them in your official notice.</div>
+  </div>
+</footer>
+
+<canvas id="confetti" class="no-print"></canvas>
+<div class="toast" id="toast" role="status"></div>
+<div class="count hide" id="count"><b id="countNum">3</b></div>
+
+<script src="js/engine.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
